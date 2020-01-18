@@ -1,0 +1,316 @@
+'Christy Lee
+'Angry Birds Project
+'December 12, 2016
+
+Public Class Form1
+
+#Region "Variables"
+
+    'Global Variables for KeyDown or KeyUp status of keyboard
+    Dim blnUp As Boolean = False
+    Dim blnDown As Boolean = False
+    Dim blnRight As Boolean = False
+    Dim blnLeft As Boolean = False
+    Dim blnSpace As Boolean = False
+    Dim blnToggle As Boolean = False
+    Dim intLives As Integer = 0
+    Dim blnHitBy1 As Boolean = False
+    Dim blnHitBy2 As Boolean = False
+    Dim blnHitBy3 As Boolean = False
+    Dim blnHitBy4 As Boolean = False
+    Dim blnHitBy5 As Boolean = False
+
+    Dim blnCollision As Boolean = False
+#End Region
+
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    'When the form loads tmrAngryBird will be enabled
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
+        SplashScreen.Hide()
+        HowToPlay.Hide()
+    End Sub
+
+#Region "KeyPresses"
+
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    'Determines what key has been pressed and sets global boolean value to True
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+
+        If e.KeyValue = Keys.Right Then
+            blnRight = True
+        ElseIf e.KeyValue = Keys.Left Then
+            blnLeft = True
+        End If
+
+        If e.KeyValue = Keys.Space Then
+            blnSpace = True
+        End If
+
+        If e.KeyValue = Keys.P Then
+            tmrPig.Stop()
+            tmrAngryBird.Stop()
+            PausedScreen.Show()
+            '       MessageBox.Show("The game is paused. Press 'OK' to resume.")
+        End If
+    End Sub
+
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    'Determines what key has been released and sets global boolean value to false
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+        If e.KeyValue = Keys.Right Then
+            blnRight = False
+        ElseIf e.KeyValue = Keys.Left Then
+            blnLeft = False
+        End If
+
+        '    If e.KeyValue = Keys.Space Then
+        'blnFire = False
+        '  picBomb.Location = New Point(picBomb.Location.X, picBomb.Location.Y < 50)
+        '     End If
+    End Sub
+#End Region
+
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    'If one of the Global Boolean Variables is set to true when the timer ticks move the picAngryBird by a set distance
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Region "timers"
+    Private Sub tmrAngryBird_Tick(sender As Object, e As EventArgs) Handles tmrAngryBird.Tick
+
+        Dim picEggs() As PictureBox = {Me.picEgg1, Me.picEgg2, Me.picEgg3, Me.picEgg4, Me.picEgg5}
+
+        Const srtMOVEBY As Short = 5   'Character Speed
+        Dim blnFireBallFollow As Boolean = False
+        Dim blnBombLeft As Boolean = False
+        Dim blnBombRight As Boolean = False
+
+        If picAngryBird.Location.X < 20 Then
+            blnLeft = False
+        End If
+
+        If picAngryBird.Location.X > 900 Then
+            blnRight = False
+        End If
+
+        If blnLeft Then
+            picAngryBird.Location = New Point(picAngryBird.Location.X - srtMOVEBY, picAngryBird.Location.Y)
+            blnBombLeft = True
+        ElseIf blnRight = True Then
+            picAngryBird.Location = New Point(picAngryBird.Location.X + srtMOVEBY, picAngryBird.Location.Y)
+            blnBombRight = True
+        End If
+
+        'For intCount As Integer = 0 To picBombs.Length - 1
+        If blnSpace Then
+            Me.picBomb1.Visible = True
+            picBomb1.Top = picBomb1.Top - 5
+            blnBombLeft = False
+            blnBombRight = False
+        End If
+
+        If picBomb1.Top < -25 Then
+            Me.picBomb1.Visible = False
+            blnFireBallFollow = True
+            blnSpace = False
+            blnBombLeft = True
+            blnBombRight = True
+        End If
+
+        If blnBombRight Then
+            picBomb1.Location = New Point(picBomb1.Location.X + srtMOVEBY, picBomb1.Location.Y)
+        Else
+            picBomb1.Location = picBomb1.Location
+        End If
+
+        If blnBombLeft = True Then
+            picBomb1.Location = New Point(picBomb1.Location.X - srtMOVEBY, picBomb1.Location.Y)
+        Else
+            picBomb1.Location = picBomb1.Location
+        End If
+
+        If blnFireBallFollow = True Then
+            picBomb1.Location = New Point(picAngryBird.Location.X + 40, picAngryBird.Location.Y - 15)
+        End If
+
+        If picBomb1.Bounds.IntersectsWith(picPig1.Bounds) Then
+
+        End If
+
+        If picEgg1.Bounds.IntersectsWith(picAngryBird.Bounds) And Not blnHitBy1 Then
+            intLives = intLives - 1
+            picEgg1.Visible = False
+            blnHitBy1 = True
+        End If
+
+        If picEgg2.Bounds.IntersectsWith(picAngryBird.Bounds) And Not blnHitBy2 Then
+            intLives = intLives - 1
+            picEgg2.Visible = False
+            blnHitBy2 = True
+        End If
+
+        If picEgg3.Bounds.IntersectsWith(picAngryBird.Bounds) And Not blnHitBy3 Then
+            intLives = intLives - 1
+            picEgg3.Visible = False
+            blnHitBy3 = True
+        End If
+
+        If picEgg4.Bounds.IntersectsWith(picAngryBird.Bounds) And Not blnHitBy4 Then
+            intLives = intLives - 1
+            picEgg4.Visible = False
+            blnHitBy4 = True
+        End If
+
+        If picEgg5.Bounds.IntersectsWith(picAngryBird.Bounds) And Not blnHitBy5 Then
+            intLives = intLives - 1
+            picEgg5.Visible = False
+            blnHitBy5 = True
+        End If
+
+        Me.lblLives.Text = intLives
+
+        If intLives = 0 Then
+            intLives = 3
+            tmrAngryBird.Stop()
+            tmrPig.Stop()
+            MessageBox.Show("GameOver")
+            End
+        End If
+    End Sub
+#End Region
+
+    Private Sub tmrPig_Tick(sender As Object, e As EventArgs) Handles tmrPig.Tick
+        Static intDirectionHorizontal As Integer = 2 'variable to move sideways
+        Static intDirectionDown As Integer = 1 'variable to move down
+        Dim picPigs() As PictureBox = {Me.picPig1, Me.picPig2, Me.picPig3, Me.picPig4, Me.picPig5, Me.picPig6, Me.picPig7, Me.picPig8, Me.picPig9, Me.picPig10, _
+                                       Me.picPig11, Me.picPig12, Me.picPig13, Me.picPig14, Me.picPig15, Me.picPig16, Me.picPig17, Me.picPig18, Me.picPig19, Me.picPig20, _
+                                       Me.picPig21, Me.picPig22, Me.picPig23, Me.picPig24, Me.picPig25, Me.picPig26, Me.picPig27, Me.picPig28, Me.picPig29, Me.picPig30}
+        Dim blnEggFollow As Boolean = False
+        Dim blnEggLeft As Boolean = False
+        Dim blnEggRight As Boolean = False
+
+        Dim blnPigLeft As Boolean = False
+        Dim blnPigRight As Boolean = False
+
+        Select Case intDirectionHorizontal  'To change the horizontal
+            Case 2  'If the direction is set to 2 move pig left
+                For intCount As Integer = 0 To picPigs.Length - 1
+                    picPigs(intCount).Left = picPigs(intCount).Left + 10
+                    If picPigs(intCount).Left >= 900 Then  'If the pig reaches the right end of the screen
+                        intDirectionHorizontal = 1 'set intDirectionHorizontal to 1
+                        intDirectionDown = 2  'set intDirectionDown to 2
+                    End If
+                Next intCount
+            Case 1  'If the direction is set to 1 move pig left
+                For intCount As Integer = 0 To picPigs.Length - 1
+                    picPigs(intCount).Left = picPigs(intCount).Left - 10
+                    If picPigs(intCount).Left <= 30 Then  'If the pig reaches the left end of the screen
+                        intDirectionHorizontal = 2  'set intDirectionHorizontal to 2
+                        intDirectionDown = 2  'set intDirectionDown to 2
+                    End If
+                Next intCount
+        End Select
+
+        If intDirectionDown = 2 Then   'If intDirectionDown is 2
+            For intCount As Integer = 0 To picPigs.Length - 1
+                picPigs(intCount).Top = picPigs(intCount).Top + 25
+            Next intCount
+            intDirectionDown = 1   'Change intDirectionDown back to 1
+        End If
+
+        'Randomize()
+        'Dim intEnemyBullets As Integer = Int(6 * Rnd() + 0)
+
+        If blnToggle Then
+            'While lives > 0
+Line:
+            Me.picEgg1.Visible = True
+            picEgg1.Top = picEgg1.Top + 30
+            If picEgg1.Top >= 670 And picPig21.Visible Then
+                picEgg1.Top = picPig21.Top
+                GoTo Line
+            End If
+            Me.picEgg2.Visible = True
+            picEgg2.Top = picEgg2.Top + 30
+            If picEgg2.Top >= 670 And picPig23.Visible Then
+                picEgg2.Top = picPig23.Top + 30
+            End If
+            Me.picEgg3.Visible = True
+            picEgg3.Top = picEgg3.Top + 30
+            If picEgg3.Top >= 670 And picPig25.Visible Then
+                picEgg3.Top = picPig25.Top + 30
+            End If
+            Me.picEgg4.Visible = True
+            picEgg4.Top = picEgg4.Top + 30
+            If picEgg4.Top >= 670 And picPig27.Visible Then
+                picEgg4.Top = picPig27.Top + 30
+            End If
+            Me.picEgg5.Visible = True
+            picEgg5.Top = picEgg5.Top + 30
+            If picEgg5.Top >= 670 And picPig29.Visible Then
+                picEgg5.Top = picPig29.Top + 30
+            End If
+            blnEggFollow = False
+            blnEggLeft = False
+            blnEggRight = False
+        End If
+
+        If blnEggFollow = True Then
+            picEgg1.Location = New Point(picPig1.Location.X + 40, picPig1.Location.Y - 15)
+        End If
+    End Sub
+
+#Region "Collision Detection"
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    'tmrCollisionDetection searches for a collision every millisecond. If blnCollision is true one life picturebox disappears,
+    'the picBomb and picPig disappears and is reset to the starting position
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Private Sub tmrCollisionDetection_Tick(sender As Object, e As EventArgs) Handles tmrCollisionDetection.Tick
+        '  Static srtLifeCount As Short = 3  'holds the number of livs left
+        blnCollision = False 'reset the boolean variable
+        'CollisionDetection()  'run the collision detection procedure
+
+        Dim picPigs() As PictureBox = {Me.picPig1, Me.picPig2, Me.picPig3, Me.picPig4, Me.picPig5, Me.picPig6, Me.picPig7, Me.picPig8, Me.picPig9, Me.picPig10, _
+                                              Me.picPig11, Me.picPig12, Me.picPig13, Me.picPig14, Me.picPig15, Me.picPig16, Me.picPig17, Me.picPig18, Me.picPig19, Me.picPig20, _
+                                              Me.picPig21, Me.picPig22, Me.picPig23, Me.picPig24, Me.picPig25, Me.picPig26, Me.picPig27, Me.picPig28, Me.picPig29, Me.picPig30}
+        Dim ctlObject As Control  'Declare a control object
+
+        For Each ctlObject In Me.Controls  'Check all the control objects on the form
+            If TypeOf ctlObject Is PictureBox Then  'If the control is a picturebox
+                If Not ctlObject.Name = "picBomb1()" Then
+                    For intCount As Integer = 0 To picPigs.Length - 1
+                        'If ctlObject.Bounds.IntersectsWith(picPigs(intCount).Bounds) Then
+                        'blnCollision = True  'picBomb hit something so blnCollision is True
+                        'picPigs(intCount).Hide()
+                        'End If
+                    Next intCount
+                End If
+            End If
+        Next
+
+        For index As Integer = 0 To picPigs.Length - 1
+            If picBomb1.Bounds.IntersectsWith(picPigs(index).Bounds) Then
+                Me.Controls.Remove(picPigs(index))
+                picPigs(index).Dispose()
+                'picPigs(index) = Nothing
+                'picBomb1 = Nothing
+            End If
+        Next index
+
+    End Sub
+#End Region
+
+    Private Sub Form1_Activated(sender As Object, e As EventArgs) Handles Me.Activated
+        tmrPig.Start()  'starts the enemy's timer
+        tmrAngryBird.Start()  'starts the player's timer
+        'tmrEnemyBullets.Start()
+        tmrCollisionDetection.Start()  'starts the collision detection timer
+        blnToggle = True
+        intLives = 3
+    End Sub
+End Class
